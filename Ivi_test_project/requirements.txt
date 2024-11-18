@@ -1,0 +1,7 @@
+requests
+pytest
+pytest-xdist
+allure-pytest
+dataclasses_json
+Faker
+python-dotenv
