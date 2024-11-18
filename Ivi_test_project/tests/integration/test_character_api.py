@@ -125,10 +125,16 @@ class TestCharactersAPI:
         response = character_client.get_character_by_name(character_name)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
+### Stress Tests ###
 
 @allure.story('Stress: Параллельное добавление персонажей')
 def test_parallel_add_characters(character_client, characters_to_cleanup):
-    characters = [create_random_character() for _ in range(10)]
+    def create_unique_character():
+        character = create_random_character()
+        character["name"] = f"_{character["name"]}_"
+        return character
+
+    characters = [create_unique_character() for _ in range(10)]
 
     def add_character_and_cleanup(character):
         response = character_client.add_character(character)
