@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from http import HTTPStatus
 
 import allure
@@ -13,6 +14,7 @@ from src.utils.create_random_character import create_random_character
 class TestCharactersAPI:
 
     ### Positive Tests ###
+
     @allure.story('Positive: Получение всех персонажей')
     def test_get_characters(self, character_client):
         response = character_client.get_characters()
@@ -90,6 +92,7 @@ class TestCharactersAPI:
         characters_to_cleanup.append(character["name"])
 
     ### Negative Tests ###
+
     @allure.story('Negative: Добавление персонажа, который уже существует')
     @pytest.mark.parametrize("existing_character", CHARACTER_DATA)
     def test_add_existing_character(self, character_client, characters_to_cleanup, existing_character):
@@ -121,3 +124,19 @@ class TestCharactersAPI:
     def test_get_not_exist_character_by_name(self, character_client, character_name):
         response = character_client.get_character_by_name(character_name)
         assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+@allure.story('Stress: Параллельное добавление персонажей')
+def test_parallel_add_characters(character_client, characters_to_cleanup):
+    characters = [create_random_character() for _ in range(10)]
+
+    def add_character_and_cleanup(character):
+        response = character_client.add_character(character)
+        if response.status_code == HTTPStatus.OK:
+            characters_to_cleanup.append(character["name"])
+        return response.status_code
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        results = list(executor.map(add_character_and_cleanup, characters))
+
+    assert all(status == HTTPStatus.OK for status in results), "Не все персонажи были добавлены успешно."
