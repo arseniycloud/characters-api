@@ -13,7 +13,6 @@ from src.utils.create_random_character import create_random_character
 class TestCharactersAPI:
 
     ### Positive Tests ###
-
     @allure.story('Positive: Получение всех персонажей')
     def test_get_characters(self, character_client):
         response = character_client.get_characters()
@@ -91,6 +90,14 @@ class TestCharactersAPI:
         characters_to_cleanup.append(character["name"])
 
     ### Negative Tests ###
+    @allure.story('Negative: Добавление персонажа, который уже существует')
+    @pytest.mark.parametrize("existing_character", CHARACTER_DATA)
+    def test_add_existing_character(self, character_client, characters_to_cleanup, existing_character):
+        character_client.add_character(existing_character)
+        characters_to_cleanup.append(existing_character["name"])
+        response = character_client.add_character(existing_character)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
     @allure.story('Negative: Удаление несуществующего персонажа')
     @pytest.mark.parametrize("name", ["NonExistentName", "AnotherName"])
     def test_delete_non_existent_character(self, character_client, name):
