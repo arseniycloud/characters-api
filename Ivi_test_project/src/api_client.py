@@ -15,9 +15,13 @@ class BaseHttpClient:
         return log_request_response(response)
 
     def make_request(self, method: str, url: str, **kwargs) -> requests.Response:
-        response = self.session.request(method, url, **kwargs)
-        self.handle_response(response)
-        return response
+        try:
+            response = self.session.request(method, url, **kwargs)
+            self.handle_response(response)
+            return response
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Ошибка запроса: {method} {url}: {e}")
+            raise
 
     @allure.step("Валидация тела ответа")
     def validate_response(self, data: dict, schema):
@@ -31,9 +35,11 @@ class BaseHttpClient:
 
 
 class CharacterClient(BaseHttpClient):
-    def __init__(self, api_base_url=API_BASE_URL, username=USERNAME, password=PASSWORD, timeout=5):
+    def __init__(self, api_base_url=None, username=USERNAME, password=PASSWORD, timeout=5):
         super().__init__()
-        self.api_base_url = api_base_url
+        self.api_base_url = api_base_url or API_BASE_URL
+        if not self.api_base_url:
+            raise ValueError("API_BASE_URL не задано.")
         self.session.auth = HTTPBasicAuth(username, password)
         self.timeout = timeout
 
