@@ -1,13 +1,6 @@
-import logging
 import random
-
 from faker import Faker
-
 from src.models import Character
-
-# Настройка логгера
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 fake = Faker()
 
@@ -42,9 +35,6 @@ def create_random_character():
     weight = random.choice(weights)
     height = random.choice(heights)
     identity = random.choice(identities)
-
-    logger.info(f"Создаем персонажа: имя={name}, вселенная={universe}, образование={education}, "
-                f"вес={weight}, рост={height}, идентичность={identity}")
 
     return Character(
         name=name,
