@@ -40,7 +40,7 @@ def log_request_response(response):
         except (ValueError, AttributeError):
             logger.info(f"Request Json: {request.body}")
 
-    status_color = Fore.GREEN if response.status_code == 200 else Fore.RED
+    status_color = Fore.GREEN if response.status_code == 200 else Fore.YELLOW
     logger.info(f"Response Status Code: {status_color}{response.status_code}{Style.RESET_ALL}")
 
     try:
