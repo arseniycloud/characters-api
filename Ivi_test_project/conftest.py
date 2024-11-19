@@ -26,7 +26,7 @@ def characters_to_cleanup(character_client):
         try:
             logger.info(f"Попытка удалить персонажа '{name}'...")
             response = character_client.delete_character(name)
-            logger.info(f"URL запроса на удаление: {response.request.url}")
+            logger.info(f"URL запроса на удаление персонажа: {response.request.url}")
             if response.status_code == HTTPStatus.OK:
                 logger.info(f"Персонаж '{name}' успешно удалён.")
             elif response.status_code == HTTPStatus.BAD_REQUEST:
