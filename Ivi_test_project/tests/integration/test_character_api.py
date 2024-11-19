@@ -125,7 +125,6 @@ class TestCharactersAPI:
         response = character_client.get_character_by_name(character_name)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
-### Stress Tests ###
 
 @allure.story('Stress: Параллельное добавление персонажей')
 def test_parallel_add_characters(character_client, characters_to_cleanup):
