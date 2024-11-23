@@ -21,7 +21,6 @@ CHARACTER_DATA = [
      "universe": "Marvel Universe", "weight": 60.0}
 ]
 
-
 MOST_COMMON_CHARACTER_NAMES = [
     "Darkstar",
     "Darwin",
@@ -29,19 +28,13 @@ MOST_COMMON_CHARACTER_NAMES = [
     "Captain Stacy",
     "Dragon Man",
     "Devos",
-    "Dinah Soar",
     "Sabretooth (Ultimate)",
     "Sage",
-    "Lady Deathstrike",
     "Lady Mastermind",
     "Count Nefaria",
     "Crimson Dynamo",
     "Cyclops (X-Men: Battle of the Atom)",
     "Ravenous",
     "Red Ghost",
-    "Centennial",
-    "Cerise",
-    "Cypher",
-    "Dakota North"
+    "Centennial"
 ]
-
