@@ -1,53 +1,149 @@
-import json
-import logging
+import random
+from concurrent.futures import ThreadPoolExecutor
+from http import HTTPStatus
 
-from colorama import init, Fore, Style
+import allure
+import pytest
 
-init(autoreset=True)
-
-console_handler = logging.StreamHandler()
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(console_handler)
-
-console_handler.setFormatter(logging.Formatter('%(message)s'))
+from src.character_data import CHARACTER_DATA, MOST_COMMON_CHARACTER_NAMES
+from src.schemas import CharacterResponseSchema, CharactersListSchema
+from src.utils.create_random_character import create_random_character
 
 
-def log_request_response(response):
-    request = response.request
+@allure.feature('Characters API')
+@pytest.mark.character_api
+class TestCharactersAPI:
 
-    curl_command = f"{Fore.MAGENTA}curl -X {request.method} '{request.url}'"
+    ### Positive Tests ###
 
-    for header, value in request.headers.items():
-        curl_command += f" -H '{header}: {value}'"
-    if request.body:
-        curl_command += f" -d '{request.body}'"
+    @allure.story('Positive: Получение всех персонажей')
+    def test_get_characters(self, character_client):
+        response = character_client.get_characters()
+        assert response.status_code == HTTPStatus.OK
 
-    elapsed_time = response.elapsed.total_seconds()
+        data = response.json()
+        character_client.validate_response(data, CharactersListSchema)
 
-    logger.info(f"Request Curl: {curl_command}\n")
+    @allure.story('Positive: Получение персонажа по имени')
+    @pytest.mark.parametrize("character", MOST_COMMON_CHARACTER_NAMES)
+    def test_get_character_by_name(self, character_client, character):
+        response = character_client.get_character_by_name(character)
+        assert response.status_code == HTTPStatus.OK
 
-    logger.info(f"Request Method: {request.method}")
-    logger.info(f"Request URL: {Fore.GREEN}{request.url}{Style.RESET_ALL}")
-    logger.info(f"Request Headers: {request.headers}")
+        data = response.json()
+        character_client.validate_response(data, CharacterResponseSchema)
 
-    if request.body:
-        try:
-            request_json = json.loads(request.body.decode('utf-8'))
-            formatted_request_json = json.dumps(request_json, indent=4)
-            logger.info(f"Request Json: {formatted_request_json}")
-        except (ValueError, AttributeError):
-            logger.info(f"Request Json: {request.body}")
+    @allure.story('Positive: Добавление персонажа с фейковыми данными')
+    def test_add_character_with_faker(self, character_client, characters_to_cleanup):
+        random_character = create_random_character()
+        response = character_client.add_character(random_character)
 
-    status_color = Fore.GREEN if response.status_code == 200 else Fore.YELLOW
-    logger.info(f"Response Status Code: {status_color}{response.status_code}{Style.RESET_ALL}")
+        # Проверяем, если персонаж уже существует
+        while response.status_code == HTTPStatus.BAD_REQUEST:
+            random_character["name"] = random_character["name"][:-2]  # Укорачиваем имя на 2 буквы
+            response = character_client.add_character(random_character)
 
-    try:
-        response_json = json.dumps(response.json(), indent=4)
-    except ValueError:
-        response_json = response.text
+        assert response.status_code == HTTPStatus.OK
 
-    logger.info(f"Response Json: {response_json}")
+        data = response.json()
+        character_client.validate_response(data, CharacterResponseSchema)
+        characters_to_cleanup.append(random_character["name"])
 
-    logger.info(f"Response Time: {Fore.BLUE}{round(elapsed_time, 3)}{Style.RESET_ALL} seconds\n")
+    @allure.story('Positive: Добавление персонажа и проверка обновления')
+    @pytest.mark.parametrize("character", CHARACTER_DATA)
+    def test_add_and_update_character(self, character_client, characters_to_cleanup, character):
+        response = character_client.add_character(character)
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.json()
+        character_client.validate_response(data, CharacterResponseSchema)
+        characters_to_cleanup.append(character["name"])
+
+        updated_character = character.copy()
+        updated_character["universe"] = create_random_character()["universe"]
+        updated_character["education"] = create_random_character()["education"]
+        updated_character["identity"] = create_random_character()["education"]
+        updated_character["weight"] = create_random_character()["weight"]
+        updated_character["height"] = create_random_character()["height"]
+        response = character_client.update_character(updated_character)
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.json()
+        character_client.validate_response(data, CharacterResponseSchema)
+
+    @allure.story('Positive: Проверка создания персонажа с максимальным и минимальным весом и ростом')
+    @pytest.mark.parametrize(
+        "weight, height",
+        [
+            (max(CHARACTER_DATA, key=lambda x: x['weight'])['weight'],
+             max(CHARACTER_DATA, key=lambda x: x['height'])['height']),
+            (min(CHARACTER_DATA, key=lambda x: x['weight'])['weight'],
+             min(CHARACTER_DATA, key=lambda x: x['height'])['height'])
+        ]
+    )
+    def test_max_weight_and_height(self, character_client, characters_to_cleanup, weight, height):
+        character = create_random_character()
+        character["name"] = f"{weight}_{height}_{random.randint(0, 1)} "
+        character["weight"] = weight
+        character["height"] = height
+        response = character_client.add_character(character)
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.json()
+        character_client.validate_response(data, CharacterResponseSchema)
+        characters_to_cleanup.append(character["name"])
+
+    ### Negative Tests ###
+
+    @allure.story('Negative: Добавление персонажа, который уже существует')
+    @pytest.mark.parametrize("existing_character", CHARACTER_DATA)
+    def test_add_existing_character(self, character_client, characters_to_cleanup, existing_character):
+        character_client.add_character(existing_character)
+        characters_to_cleanup.append(existing_character["name"])
+        response = character_client.add_character(existing_character)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    @allure.story('Negative: Удаление несуществующего персонажа')
+    @pytest.mark.parametrize("name", ["NonExistentName", "AnotherName"])
+    def test_delete_non_existent_character(self, character_client, name):
+        response = character_client.delete_character(name)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    @allure.story('Negative: Добавление персонажа с некорректными данными')
+    @pytest.mark.parametrize(
+        "invalid_character",
+        [
+            {"name": "", "universe": "Marvel Universe", "weight": "not_a_number"},
+            {"name": "Duplicate", "universe": "", "height": -1},
+        ],
+    )
+    def test_add_invalid_character(self, character_client, invalid_character):
+        response = character_client.add_character(invalid_character)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    @allure.story('Negative: Получение несуществующего персонажа по имени')
+    @pytest.mark.parametrize("character_name", [char["name"] for char in CHARACTER_DATA])
+    def test_get_not_exist_character_by_name(self, character_client, character_name):
+        response = character_client.get_character_by_name(character_name)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+@allure.story('Stress: Параллельное добавление персонажей')
+def test_parallel_add_characters(character_client, characters_to_cleanup):
+    def create_unique_character():
+        character = create_random_character()
+        character["name"] = f"_{character["name"]}_"
+        return character
+
+    characters = [create_unique_character() for _ in range(10)]
+
+    def add_character_and_cleanup(character):
+        response = character_client.add_character(character)
+        if response.status_code == HTTPStatus.OK:
+            characters_to_cleanup.append(character["name"])
+        return response.status_code
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        results = list(executor.map(add_character_and_cleanup, characters))
+
+    assert all(status == HTTPStatus.OK for status in results), "Не все персонажи были добавлены успешно."
