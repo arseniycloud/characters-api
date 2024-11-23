@@ -50,4 +50,4 @@ def log_request_response(response):
 
     logger.info(f"Response Json: {response_json}")
 
-    logger.info(f"Response Time: {round(elapsed_time, 3)} seconds\n")
+    logger.info(f"Response Time: {Fore.BLUE}{round(elapsed_time, 3)}{Style.RESET_ALL} seconds\n")
