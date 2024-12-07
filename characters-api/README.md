@@ -1,4 +1,6 @@
 ### FastAPI and Traefik with Monitoring by Prometheus and Grafana
+![image](https://github.com/user-attachments/assets/182277c6-dcb7-4308-aa0f-4de6b3973cf4)
+
 
 ##### This project demonstrates a robust setup using FastAPI, Traefik for routing and reverse proxy, Prometheus for metrics collection, and Grafana for visualization.
 
@@ -19,7 +21,7 @@ or
     docker-compose up --build
 
 ### Services:
-   * FastAPI: http://localhost:8000
+   * FastAPI: http://localhost:8000/docs
    * Traefik Dashboard: http://localhost:8080
    * Prometheus: http://localhost:9090
    * Grafana: http://localhost:3001 (Use admin as the password)
