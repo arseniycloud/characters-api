@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic[email]
+sqlalchemy
+pydantic
+psycopg2
+starlette
+requests
+alembic
+python-dotenv
+prometheus_fastapi_instrumentator
