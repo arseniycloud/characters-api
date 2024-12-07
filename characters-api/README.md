@@ -1,5 +1,5 @@
 ### FastAPI and Traefik with Monitoring by Prometheus and Grafana
-![image](https://github.com/user-attachments/assets/182277c6-dcb7-4308-aa0f-4de6b3973cf4)
+
 
 
 ##### This project demonstrates a robust setup using FastAPI, Traefik for routing and reverse proxy, Prometheus for metrics collection, and Grafana for visualization.
@@ -37,7 +37,7 @@ Visualizes metrics provided by Prometheus.  Import the pre-configured dashboard 
 
 ## Working with the API
 
-#### Usage:
+![image](https://github.com/user-attachments/assets/182277c6-dcb7-4308-aa0f-4de6b3973cf4)
 
 **Get All Characters**
 ```
@@ -76,9 +76,17 @@ curl -X GET "http://localhost:8000/test-db"
 
 
 **▎Grafana Dashboard Setup**
+![image](https://github.com/user-attachments/assets/be007519-6b37-418d-b961-e3a368590dea)
+
+
 1. Log in to Grafana using admin/admin.
-2. Navigate to "Dashboards" -> "Import".
-3. Enter ID 4475 and follow the import instructions.
+2. Navigate to Data Sources
+3. Add "New Datasources" -> Prometheus
+4. Add Prometheus server url -> http://prometheus:9090
+5. Http method -> GET
+6. Tap "Save & Test"
+7. Navigate to "Dashboards" -> "Import".
+8. Enter ID 4475 and follow the import instructions.
 
 
 **▎Logs and Debugging**
