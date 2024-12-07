@@ -29,8 +29,3 @@ class CharacterResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-# Определяем модель данных для запроса
-class GenerateRequest(BaseModel):
-    prompt: str = "Most beautiful place in the word"
