@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app.config import setup_logging
 from app.configdb import get_db
 from app.model import Character
-from app.schemas import CharacterResponse, GenerateRequest
+from app.schemas import CharacterResponse
 
 # Настройка логирования
 logger = setup_logging()
@@ -134,57 +134,3 @@ async def test_db(db: Session = Depends(get_db)):
     except SQLAlchemyError as e:
         logger.error(f"Ошибка базы данных при тестировании соединения: {e}")
         return {"status": "Database error", "details": str(e)}
-
-
-@app.post("/generate-ai-text")
-async def generate_ai_text(request_data: GenerateRequest):
-    try:
-        payload = {
-            "model": "llama3",
-            "prompt": request_data.prompt + "Дай ответ на русском языке",
-            "stream": False
-        }
-
-        # Отправляем запрос на локальный API для генерации текста
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json=payload
-        )
-
-        response.raise_for_status()
-
-        # Получаем и обрабатываем ответ от API
-        api_response = response.json()
-        formatted_response = api_response['response']
-
-        # Возвращаем отформатированный ответ без спецсимволов
-        return formatted_response
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка связи с сервером: {str(e)}")
-
-
-@app.post("/generate-ai-json")
-async def generate_ai_json(request_data: GenerateRequest):
-    try:
-        payload = {
-            "model": "llama3",
-            "prompt": request_data.prompt + "Дай ответ в виде JSON на русском языке",
-            "format": "json",
-            "stream": False
-        }
-
-        # Отправляем запрос на локальный API для генерации текста
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json=payload
-        )
-
-        response.raise_for_status()
-        # Получаем и обрабатываем ответ от API
-        api_response = response.json()
-        formatted_response = json.loads(api_response['response'])
-
-        # Возвращаем отформатированный ответ без спецсимволов
-        return formatted_response
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка связи с сервером: {str(e)}")
