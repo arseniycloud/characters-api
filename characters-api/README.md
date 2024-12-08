@@ -76,6 +76,7 @@ curl -X GET "http://localhost:8000/test-db"
 
 
 **▎Grafana Dashboard Setup**
+
 ![image](https://github.com/user-attachments/assets/be007519-6b37-418d-b961-e3a368590dea)
 
 
