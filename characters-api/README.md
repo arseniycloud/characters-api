@@ -6,11 +6,9 @@
 
 #####  **1. Getting Started**
 
-Prerequisites:
-• Docker
-• Docker Compose
+Prerequisites: Docker, Docker Compose
 
-##### **Steps to Launch**
+##### **Steps to Launch:**
 1. Clone the Repository
 2. Build and Start the Containers:
 
