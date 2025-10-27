@@ -2,10 +2,10 @@ import logging
 from dotenv import load_dotenv
 import os
 
-# Загрузка переменных из .env файла
+# Load environment variables from .env file
 load_dotenv()
 
-# Получение URL базы данных из переменных окружения
+# Get database URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def setup_logging():

@@ -1,6 +1,6 @@
 ## Character API Autotests
 
-![](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTlsbWh0Z3Z4OTdramJ1dzdteTJvcXJvM2g0a3Q5ajZvY3p5bm1jZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QXwtfadqo7wbfmT46H/giphy.gif)
+![Test Automation](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTlsbWh0Z3Z4OTdramJ1dzdteTJvcXJvM2g0a3Q5ajZvY3p5bm1jZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QXwtfadqo7wbfmT46H/giphy.gif)
 
 This project contains tests for the [Ivi Character API](https://rest.test.ivi.ru/v2), written using
 the pytest library.
@@ -46,7 +46,7 @@ To run tests in multithreaded mode with the environment variable, use:
 
 ## Running Tests via Docker
 
-![](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnJ5Z2lqM2VtZmZyb2YyYTFudndsbnowbnhza3FleG8zdnhveWJuMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bi34AxJHYSsJljAqGZ/giphy.gif)
+![Docker](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnJ5Z2lqM2VtZmZyb2YyYTFudndsbnowbnhza3FleG8zdnhveWJuMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bi34AxJHYSsJljAqGZ/giphy.gif)
 
 If you prefer to run tests in a Docker container, execute the following commands:
 

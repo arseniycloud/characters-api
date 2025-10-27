@@ -15,5 +15,5 @@ def get_db():
         db.close()
 
 
-# Создание таблиц в базе данных
+# Create database tables
 Base.metadata.create_all(bind=engine)

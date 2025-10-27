@@ -2,13 +2,13 @@ import csv
 
 import requests
 
-# Путь к CSV файлу
+# Path to CSV file
 file_path = 'characters.csv'
 
-# URL API
+# API URL
 url = 'http://localhost:8000/character'
 
-# Читаем данные из CSV и делаем POST запросы
+# Read data from CSV and make POST requests
 with open(file_path, newline='', encoding='utf-8') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
@@ -25,8 +25,8 @@ with open(file_path, newline='', encoding='utf-8') as csvfile:
         response = requests.post(url, json=character_data)
 
         if response.status_code == 200:
-            print(f"Персонаж {character_data['name']} успешно добавлен.")
+            print(f"Character {character_data['name']} successfully added.")
         else:
-            print(f"Ошибка при добавлении персонажа {character_data['name']}: {response.json()}")
+            print(f"Error adding character {character_data['name']}: {response.json()}")
 
-print("Все персонажи обработаны!")
+print("All characters processed!")

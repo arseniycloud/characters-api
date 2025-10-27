@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class CharacterCreate(BaseModel):
-    """Модель данных для создания нового персонажа."""
+    """Data model for creating a new character."""
     name: str = Field(..., min_length=1, max_length=50, description="Name of the character")
     education: Optional[str] = Field(None, description="Education of the character")
     height: Optional[float] = Field(None, ge=0, description="Height of the character in meters")
@@ -18,7 +18,7 @@ class CharacterCreate(BaseModel):
 
 
 class CharacterResponse(BaseModel):
-    """Модель данных для ответа без идентификатора."""
+    """Data model for response without identifier."""
     name: str
     education: Optional[str] = None
     height: Optional[float] = None

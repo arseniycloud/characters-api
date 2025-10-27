@@ -4,7 +4,7 @@ from src.models import Character
 
 fake = Faker()
 
-# Примеры списков для случайного выбора
+# Example lists for random selection
 educations = [
     "High school graduate", "College graduate", "Ph.D. in Biophysics", "Unrevealed",
     "Military training", "FBI training", "High school dropout", "University graduate",
@@ -28,7 +28,7 @@ weights = [103.0, 122.0, 78.0, 67.5, 45.45, 191.25, 108.0, 82.35, 150.0, 146.0, 
 
 
 def create_random_character():
-    """Создает объект Character с случайными данными."""
+    """Create a Character object with random data."""
     name = fake.first_name()
     universe = random.choice(universes)
     education = random.choice(educations)

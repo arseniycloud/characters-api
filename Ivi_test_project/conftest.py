@@ -5,7 +5,7 @@ import pytest
 
 from src.api_client import CharacterClient
 
-# Настройка логгера
+# Setup logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -17,22 +17,36 @@ def character_client():
 
 @pytest.fixture(scope='function')
 def characters_to_cleanup(character_client):
-    """Фикстура для удаления персонажа после теста"""
+    """
+    Fixture for cleaning up characters after tests.
+    Automatically deletes characters created during the test.
+    """
     created_characters = []
 
     yield created_characters
 
+    # Cleanup only characters created in this test
     for name in created_characters:
         try:
-            logger.info(f"Попытка удалить персонажа '{name}'...")
+            logger.info(f"Attempting to delete character '{name}'...")
             response = character_client.delete_character(name)
-            logger.info(f"URL запроса на удаление персонажа: {response.request.url}")
+            logger.info(f"Character deletion request URL: {response.request.url}")
             if response.status_code == HTTPStatus.OK:
-                logger.info(f"Персонаж '{name}' успешно удалён.")
+                logger.info(f"Character '{name}' successfully deleted.")
             elif response.status_code == HTTPStatus.BAD_REQUEST:
                 logger.warning(
-                    f"Персонаж '{name}' не найден или не может быть удален. Статус: {response.status_code}")
+                    f"Character '{name}' not found or cannot be deleted. Status: {response.status_code}")
             else:
-                logger.error(f"Неожиданный код статуса при удалении '{name}': {response.status_code}")
+                logger.error(f"Unexpected status code when deleting '{name}': {response.status_code}")
         except Exception as e:
-            logger.error(f"Ошибка при попытке удалить персонажа '{name}': {str(e)}")
+            logger.error(f"Error attempting to delete character '{name}': {str(e)}")
+
+
+@pytest.fixture(scope='function')
+def unique_character_name():
+    """
+    Generate unique character name for test isolation.
+    Uses timestamp to ensure uniqueness.
+    """
+    import time
+    return f"test_character_{int(time.time() * 1000)}"
